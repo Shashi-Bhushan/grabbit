@@ -26,6 +26,7 @@ import org.springframework.batch.repeat.RepeatStatus
 
 import javax.annotation.Nonnull
 
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
 /*
@@ -77,7 +78,11 @@ class CreateHttpConnectionTasklet implements Tasklet {
         if(statusCode != SC_OK) {
             log.warn "Received a status of ${statusCode} when attempting to create a connection to ${jobParameters.get(ClientBatchJob.HOST)}. Bailing out. See debug log for more details."
             log.debug "Request to start a connection with ${jobParameters.get(ClientBatchJob.HOST)} resulted in: ${response.entity}."
-            contribution.setExitStatus(ExitStatus.FAILED)
+            if(statusCode == SC_NOT_FOUND){
+                contribution.setExitStatus(new ExitStatus("FAILED", "PATH NOT FOUND"))
+            }else{
+                contribution.setExitStatus(ExitStatus.FAILED)
+            }
             return RepeatStatus.FINISHED
         }
         HttpEntity responseEntity = response.entity
@@ -100,6 +105,7 @@ class CreateHttpConnectionTasklet implements Tasklet {
 
         final String encodedContentAfterDate = URLEncoder.encode(contentAfterDate, 'utf-8')
         final String encodedPath = URLEncoder.encode(path, 'utf-8')
+
 
         URIBuilder uriBuilder = new URIBuilder(scheme: "http", host: host, port: port as Integer, path: "/grabbit/content")
         uriBuilder.addParameter("path", encodedPath)
