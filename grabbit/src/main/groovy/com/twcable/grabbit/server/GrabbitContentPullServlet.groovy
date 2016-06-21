@@ -9,7 +9,11 @@ import org.apache.sling.api.SlingHttpServletRequest
 import org.apache.sling.api.SlingHttpServletResponse
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet
 
+import javax.jcr.PathNotFoundException
+import javax.jcr.Session
+
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_OK
 
 /*
@@ -69,6 +73,14 @@ class GrabbitContentPullServlet extends SlingSafeMethodsServlet {
 
         final decodedPath = URLDecoder.decode(path, "utf-8")
         final decodedExcludePaths = excludePaths.collect { String ep -> URLDecoder.decode(ep, 'UTF-8') }
+        Session session = request.getResourceResolver()?.adaptTo(Session.class);
+        try{
+            session?.getNode(decodedPath)
+        }catch(PathNotFoundException cause){
+            response.status = SC_NOT_FOUND
+            response.writer.write("Path not found for content!")
+            return
+        }
         response.contentType = "application/octet-stream"
         response.status = SC_OK
 
