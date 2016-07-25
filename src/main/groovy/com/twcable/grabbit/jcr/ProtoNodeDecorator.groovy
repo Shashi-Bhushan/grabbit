@@ -21,6 +21,7 @@ import com.twcable.grabbit.proto.NodeProtos.Value as ProtoValue
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.jackrabbit.commons.JcrUtils
+import org.apache.jackrabbit.util.Text
 
 import javax.annotation.Nonnull
 import javax.jcr.Node as JCRNode
@@ -82,7 +83,7 @@ class ProtoNodeDecorator {
      * @return the newly created, or found node
      */
     JCRNode getOrCreateNode(Session session) {
-        JcrUtils.getOrCreateByPath(innerProtoNode.name, primaryType, session)
+        JcrUtils.getOrCreateByPath(Text.escapeIllegalJcrChars(innerProtoNode.name), primaryType, session)
     }
 
 
