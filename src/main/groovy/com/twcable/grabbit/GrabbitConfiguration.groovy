@@ -107,7 +107,7 @@ class GrabbitConfiguration {
 
         if (errorBuilder.hasErrors()) throw errorBuilder.build()
 
-        sortPathConfigByPath(pathConfigurations)
+        sortPathConfigByDepth(pathConfigurations)
 
         return new GrabbitConfiguration(
             serverUsername,
@@ -120,14 +120,14 @@ class GrabbitConfiguration {
     }
 
     /**
-     * Sorts the {@code pathConfigurations} on the basis of path in configuration
+     * Sorts the {@code pathConfigurations} on the basis of path depth
      *
      * @param pathConfigurations
      *          Collection of {@link PathConfiguration} to sort
      * @return
      *          Sorted Collection of {@link PathConfiguration}
      */
-    private static Collection<PathConfiguration> sortPathConfigByPath(Collection<PathConfiguration> pathConfigurations){
+    private static Collection<PathConfiguration> sortPathConfigByDepth(Collection<PathConfiguration> pathConfigurations){
         pathConfigurations.sort{
             it.path
         }

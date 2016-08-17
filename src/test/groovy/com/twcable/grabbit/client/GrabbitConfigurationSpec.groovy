@@ -480,6 +480,7 @@ class GrabbitConfigurationSpec extends Specification {
 
     def "Deduce Path Order for transaction"() {
         given:
+        def pathList = ["/a", "/a/b", "/a/b/c", "/e", "/e/f"];
         def input  = """
         {
             "serverUsername" : "admin",
@@ -489,19 +490,19 @@ class GrabbitConfigurationSpec extends Specification {
             "deltaContent" : false,
             "pathConfigurations" :  [
                 {
-                    "path" : "/a/b/c",
+                    "path" : ${pathList[1]},
                 },
                 {
-                    "path" : "/e/f",
+                    "path" : ${pathList[3]},
                 },
                 {
-                    "path" : "/e",
+                    "path" : ${pathList[2]},
                 },
                 {
-                    "path" : "/a/b",
+                    "path" : ${pathList[4]},
                 },
                 {
-                    "path" : "/a",
+                    "path" : ${pathList[0]},
                 }
             ]
         }
@@ -512,6 +513,10 @@ class GrabbitConfigurationSpec extends Specification {
 
         then:
         output instanceof GrabbitConfiguration
+
+        output.pathConfigurations.eachWithIndex { element, index ->
+            element.path == pathList[index]
+        }
 
     }
 }
