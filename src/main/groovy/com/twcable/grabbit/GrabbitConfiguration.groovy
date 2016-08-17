@@ -107,6 +107,8 @@ class GrabbitConfiguration {
 
         if (errorBuilder.hasErrors()) throw errorBuilder.build()
 
+        sortPathConfigByPath(pathConfigurations)
+
         return new GrabbitConfiguration(
             serverUsername,
             serverPassword,
@@ -115,6 +117,20 @@ class GrabbitConfiguration {
             deltaContent,
             pathConfigurations.asImmutable()
         )
+    }
+
+    /**
+     * Sorts the {@code pathConfigurations} on the basis of path in configuration
+     *
+     * @param pathConfigurations
+     *          Collection of {@link PathConfiguration} to sort
+     * @return
+     *          Sorted Collection of {@link PathConfiguration}
+     */
+    private static Collection<PathConfiguration> sortPathConfigByPath(Collection<PathConfiguration> pathConfigurations){
+        pathConfigurations.sort{
+            it.path
+        }
     }
 
     private static final Pattern prePattern = Pattern.compile(/^(\/|\.\/|\\).*$/)

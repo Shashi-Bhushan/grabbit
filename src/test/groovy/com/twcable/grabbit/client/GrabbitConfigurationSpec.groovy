@@ -477,4 +477,41 @@ class GrabbitConfigurationSpec extends Specification {
         output.pathConfigurations.last().batchSize == 50
 
     }
+
+    def "Deduce Path Order for transaction"() {
+        given:
+        def input  = """
+        {
+            "serverUsername" : "admin",
+            "serverPassword" : "admin",
+            "serverHost" : "localhost",
+            "serverPort" : "4503",
+            "deltaContent" : false,
+            "pathConfigurations" :  [
+                {
+                    "path" : "/a/b/c",
+                },
+                {
+                    "path" : "/e/f",
+                },
+                {
+                    "path" : "/e",
+                },
+                {
+                    "path" : "/a/b",
+                },
+                {
+                    "path" : "/a",
+                }
+            ]
+        }
+        """
+
+        when:
+        def output = GrabbitConfiguration.create(input)
+
+        then:
+        output instanceof GrabbitConfiguration
+
+    }
 }
