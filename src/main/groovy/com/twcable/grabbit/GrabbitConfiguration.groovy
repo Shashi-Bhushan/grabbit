@@ -107,7 +107,7 @@ class GrabbitConfiguration {
 
         if (errorBuilder.hasErrors()) throw errorBuilder.build()
 
-        sortPathConfigByDepth(pathConfigurations)
+        pathConfigurations = sortPathConfigs(pathConfigurations)
 
         return new GrabbitConfiguration(
             serverUsername,
@@ -120,15 +120,26 @@ class GrabbitConfiguration {
     }
 
     /**
-     * Sorts the {@code pathConfigurations} on the basis of path depth
+     * Removes '/.' from {@code pathConfigurations}'s path if exists in the end, and Sorts the {@code pathConfigurations}
+     * lexicographically on the basis of paths
      *
      * @param pathConfigurations
      *          Collection of {@link PathConfiguration} to sort
      * @return
      *          Sorted Collection of {@link PathConfiguration}
      */
-    private static Collection<PathConfiguration> sortPathConfigByDepth(Collection<PathConfiguration> pathConfigurations){
-        pathConfigurations.sort{
+    private
+    static Collection<PathConfiguration> sortPathConfigs(@Nonnull final Collection<PathConfiguration> pathConfigurations){
+        Collection<PathConfiguration> modifiablePathConfig = pathConfigurations;
+
+        modifiablePathConfig.collect{ element ->
+            if(element.path.substring(element.path.lastIndexOf('/')) == '/.') {
+                element.path = element.path.substring(0, element.path.lastIndexOf('/'))
+            }
+            return element
+        }
+
+        modifiablePathConfig.sort{
             it.path
         }
     }

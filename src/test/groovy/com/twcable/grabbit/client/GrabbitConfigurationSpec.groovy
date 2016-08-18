@@ -515,8 +515,37 @@ class GrabbitConfigurationSpec extends Specification {
         output instanceof GrabbitConfiguration
 
         output.pathConfigurations.eachWithIndex { element, index ->
-            element.path == pathList[index]
+            assert element.path == pathList[index]
         }
+    }
 
+    def "Parent should be first in Path Order"() {
+        given:
+        def input  = """
+        {
+            "serverUsername" : "admin",
+            "serverPassword" : "admin",
+            "serverHost" : "localhost",
+            "serverPort" : "4503",
+            "deltaContent" : false,
+            "pathConfigurations" :  [
+                {
+                    "path" : "/a/\$",
+                },
+                {
+                    "path" : "/a/.",
+                }
+            ]
+        }
+        """
+
+        when:
+        def output = GrabbitConfiguration.create(input)
+
+        then:
+        output instanceof GrabbitConfiguration
+
+        output.pathConfigurations.first().path == "/a"
+        output.pathConfigurations.last().path == "/a/\$"
     }
 }
