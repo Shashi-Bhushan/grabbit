@@ -128,18 +128,18 @@ class GrabbitConfiguration {
      * @return
      *          Sorted Collection of {@link PathConfiguration}
      */
-    private
-    static Collection<PathConfiguration> sortPathConfigs(@Nonnull final Collection<PathConfiguration> pathConfigurations){
+    private static Collection<PathConfiguration> sortPathConfigs(
+            @Nonnull final Collection<PathConfiguration> pathConfigurations) {
         Collection<PathConfiguration> modifiablePathConfig = pathConfigurations;
 
-        modifiablePathConfig.collect{ element ->
-            if(element.path.substring(element.path.lastIndexOf('/')) == '/.') {
+        modifiablePathConfig.collect { element ->
+            if (element.path.substring(element.path.lastIndexOf('/')) == '/.') {
                 element.path = element.path.substring(0, element.path.lastIndexOf('/'))
             }
             return element
         }
 
-        modifiablePathConfig.sort{
+        modifiablePathConfig.sort {
             it.path
         }
     }
