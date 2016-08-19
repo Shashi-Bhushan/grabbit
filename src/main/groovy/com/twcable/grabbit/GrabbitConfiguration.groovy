@@ -107,7 +107,7 @@ class GrabbitConfiguration {
 
         if (errorBuilder.hasErrors()) throw errorBuilder.build()
 
-        pathConfigurations = sortPathConfigs(pathConfigurations)
+        pathConfigurations = getSortedPathConfigurationsByDepth(pathConfigurations)
 
         return new GrabbitConfiguration(
             serverUsername,
@@ -121,26 +121,21 @@ class GrabbitConfiguration {
 
     /**
      * Removes '/.' from {@code pathConfigurations}'s path if exists in the end, and Sorts the {@code pathConfigurations}
-     * lexicographically on the basis of paths
+     * on the basis of paths' depth
      *
      * @param pathConfigurations
      *          Collection of {@link PathConfiguration} to sort
      * @return
      *          Sorted Collection of {@link PathConfiguration}
      */
-    private static Collection<PathConfiguration> sortPathConfigs(
+    private static Collection<PathConfiguration> getSortedPathConfigurationsByDepth(
             @Nonnull final Collection<PathConfiguration> pathConfigurations) {
-        Collection<PathConfiguration> modifiablePathConfig = pathConfigurations;
 
-        modifiablePathConfig.collect { element ->
-            if (element.path.substring(element.path.lastIndexOf('/')) == '/.') {
-                element.path = element.path.substring(0, element.path.lastIndexOf('/'))
-            }
-            return element
-        }
-
-        modifiablePathConfig.sort {
-            it.path
+        return pathConfigurations.sort(false) { PathConfiguration it ->
+            final String thePath = it.path
+            //'/.' means 'this node', so we don't count it as an additional directory level
+            it.path = thePath[-2..-1] == "/." ? thePath - "/." : thePath
+            return it.path.count("/")
         }
     }
 

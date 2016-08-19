@@ -480,7 +480,7 @@ class GrabbitConfigurationSpec extends Specification {
 
     def "Deduce Path Order for transaction"() {
         given:
-        def pathList = ["/a", "/a/b", "/a/b/c", "/e", "/e/f"];
+        def pathList = ["/a", "/a/b/c", "/a/b", "/a/b/c/d/e", "/a/b/c/d"];
         def input  = """
         {
             "serverUsername" : "admin",
@@ -515,7 +515,7 @@ class GrabbitConfigurationSpec extends Specification {
         output instanceof GrabbitConfiguration
 
         output.pathConfigurations.eachWithIndex { element, index ->
-            assert element.path == pathList[index]
+            assert element.path.count('/') == index + 1
         }
     }
 
