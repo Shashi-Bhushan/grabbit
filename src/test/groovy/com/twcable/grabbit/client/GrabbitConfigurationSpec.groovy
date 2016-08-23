@@ -480,7 +480,7 @@ class GrabbitConfigurationSpec extends Specification {
 
     def "Deduce Path Order for transaction"() {
         given:
-        def pathList = ["/a", "/a/b/c", "/a/b", "/a/b/c/d/e", "/a/b/c/d"];
+        def pathList = ["/a/.", "/a/\$", "/a/b/c", "/a/b/c/d"];
         def input  = """
         {
             "serverUsername" : "admin",
@@ -490,16 +490,13 @@ class GrabbitConfigurationSpec extends Specification {
             "deltaContent" : false,
             "pathConfigurations" :  [
                 {
-                    "path" : ${pathList[1]},
-                },
-                {
                     "path" : ${pathList[3]},
                 },
                 {
-                    "path" : ${pathList[2]},
+                    "path" : ${pathList[1]},
                 },
                 {
-                    "path" : ${pathList[4]},
+                    "path" : ${pathList[2]},
                 },
                 {
                     "path" : ${pathList[0]},
@@ -515,37 +512,8 @@ class GrabbitConfigurationSpec extends Specification {
         output instanceof GrabbitConfiguration
 
         output.pathConfigurations.eachWithIndex { element, index ->
-            assert element.path.count('/') == index + 1
+            assert element.path == pathList[index]
         }
     }
 
-    def "Parent should be first in Path Order"() {
-        given:
-        def input  = """
-        {
-            "serverUsername" : "admin",
-            "serverPassword" : "admin",
-            "serverHost" : "localhost",
-            "serverPort" : "4503",
-            "deltaContent" : false,
-            "pathConfigurations" :  [
-                {
-                    "path" : "/a/\$",
-                },
-                {
-                    "path" : "/a/.",
-                }
-            ]
-        }
-        """
-
-        when:
-        def output = GrabbitConfiguration.create(input)
-
-        then:
-        output instanceof GrabbitConfiguration
-
-        output.pathConfigurations.first().path == "/a"
-        output.pathConfigurations.last().path == "/a/\$"
-    }
 }
